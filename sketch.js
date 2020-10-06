@@ -1,26 +1,30 @@
 let path;
-let fullPath;
+let fullPathX;
+let fullPathY;
 let millisOld = 0;
-let mouseClick;
+let mouseClickIdx = 0;
 let backgroundColor = 40;  // dark grey
 
 function setup() {
-  createCanvas(800, 480);
+  let w = min(windowWidth - 20, 800);
+  let h = min(int(windowHeight * 0.8), w * 0.67)
+  createCanvas(w, h);
 
   // path: left half of the screen with the actual path
   // including the superposed random numbers
-  path = new Array(width / 10 + 1);
+  path = new Array(51);
   // fullPath: full screen, smooth path without random numbers
   // on the left side, calculated spline path on the right side
-  fullPath = new Array(width / 5 + 1);
+  fullPathX = new Array(101);
+  fullPathY = new Array(101);
   
-  for(let i=0; i<fullPath.length; ++i) {
-    fullPath[i] = height * 2. / 3.;
+  for(let i=0; i<fullPathX.length; ++i) {
+    fullPathX[i] = width / 100.0 * i;
+    fullPathY[i] = height * 0.67;
   }
   for(let i=0; i<path.length; ++i) {
-    path[i] = round(fullPath[i]) + random(-2, 2);
+    path[i] = round(fullPathY[i]) + random(-2, 2);
   }
-  mouseClick = createVector(0, fullPath[fullPath.length-1]);
 }
 
 function draw() {
@@ -32,36 +36,35 @@ function draw() {
 
   // draw path
   for(let i=0; i<(path.length-1); ++i) {
-      line(i*5, path[i], (i+1)*5, path[i+1]);
+      line(fullPathX[i], path[i], fullPathX[i+1], path[i+1]);
   }
-  for(let i=path.length; i<(fullPath.length-1); i=i+2) {
-    line(i*5, round(fullPath[i]), (i+1)*5, round(fullPath[i+1]));
+  for(let i=path.length; i<(fullPathX.length-1); i=i+2) {
+    line(fullPathX[i], fullPathY[i], fullPathX[i+1], fullPathY[i+1]);
   }
-  if (mouseClick.x >= (width - (fullPath.length - path.length) * 5)) {
-    ellipse(mouseClick.x, mouseClick.y, 10, 10);
+  if (mouseClickIdx >= path.length) {
+    ellipse(fullPathX[mouseClickIdx], fullPathY[mouseClickIdx], 10, 10);
   }
 
   // draw bicycle
-  let xPosition = width / 3.0;
-  let idx = round(xPosition / 5.0);
-  let slope = (fullPath[idx-15] - fullPath[idx+15]) / 140.0;
+  let slope = (fullPathY[15] - fullPathY[45]) /
+              (fullPathX[45] - fullPathX[15]);
   let pedalAngle = updateMillis / 20.0 * m / 1500.0 * TWO_PI;
   let bodyPosition = slope * 2.0;
-  translate(xPosition, fullPath[round(xPosition / 5.0)] + 15);
+  translate(fullPathX[30], fullPathY[30] + (width / 50.0));
   rotate(-slope * PI / 4.0);
-  drawBicycle(200, pedalAngle, bodyPosition);
+  drawBicycle(width / 4, pedalAngle, bodyPosition);
   
   // update path if 'updateMillis' have elapsed since last update 
   if ((m - millisOld) > updateMillis) {
-    for(let i=0; i<(fullPath.length-1); ++i) {
-        fullPath[i] = fullPath[i+1];
+    for(let i=0; i<(fullPathY.length-1); ++i) {
+        fullPathY[i] = fullPathY[i+1];
     }
     for(let i=0; i<(path.length-1); ++i) {
         path[i] = path[i+1];
     }
-    path[path.length-1] = round(fullPath[path.length-1]) + random(-2, 2);
-    if (mouseClick.x >= 5) {
-      mouseClick.x -= 5;
+    path[path.length-1] = round(fullPathY[path.length-1]) + random(-2, 2);
+    if (mouseClickIdx > 0) {
+      mouseClickIdx--;
     }
 
     millisOld = m;
@@ -258,15 +261,13 @@ function calcIntersectionOfTwoCircles(
  * Calculate new path according to new position given by mouse click action.
  */
 function mouseClicked() {
-  let y1 = fullPath[path.length-1];
-  let slope1 = (fullPath[path.length-1] - fullPath[path.length-2]) / 5;
-  let x2 = width - (fullPath.length - path.length) * 5;
+  let y1 = fullPathY[path.length-1];
+  let slope1 = (fullPathY[path.length-1] - fullPathY[path.length-2]) /
+               (fullPathX[path.length-1] - fullPathX[path.length-2]);
+  let x2 = width - fullPathX[path.length];
   let y2 = mouseY;
-  y2 = max(y2, 180);
-  y2 = min(y2, height - 20);
-  
-  mouseClick.x = width;
-  mouseClick.y = y2;
+  y2 = max(y2, height * 0.35);
+  y2 = min(y2, height * 0.95);
 
   // calculate new path using a cubical spline between 2 points
   // spline: y = a[0]*x^3 + a[1]*x^2 + a[2]*x + a[3]
@@ -279,12 +280,25 @@ function mouseClicked() {
   a[0] = (a[2]*x2+2.0*a[3]-2.0*y2)/pow(x2, 3.0);
   
   // calculate y points
-  for(let i=path.length; i<fullPath.length; ++i) {
-    let x = (i-path.length)*5;
-    if (x < x2) {
-      fullPath[i] = a[0]*pow(x, 3) + a[1]*pow(x, 2) + a[2]*x + a[3];
-    } else {
-      fullPath[i] = fullPath[i-1];
-    }
+  for(let i=path.length; i<fullPathX.length; ++i) {
+    let x = fullPathX[i] - fullPathX[path.length];
+    fullPathY[i] = a[0]*pow(x, 3) + a[1]*pow(x, 2) + a[2]*x + a[3];
+  }
+
+  mouseClickIdx = fullPathX.length - 1;
+}
+
+function windowResized() {
+  let w = min(windowWidth - 20, 800);
+  let h = min(int(windowHeight * 0.8), w * 0.67)
+  resizeCanvas(w, h);
+  
+  // reset path
+  for(let i=0; i<fullPathX.length; ++i) {
+    fullPathX[i] = width / 100.0 * i;
+    fullPathY[i] = height * 0.67;
+  }
+  for(let i=0; i<path.length; ++i) {
+    path[i] = round(fullPathY[i]) + random(-2, 2);
   }
 }
