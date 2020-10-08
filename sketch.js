@@ -7,7 +7,7 @@ let backgroundColor = 40;  // dark grey
 
 function setup() {
   let w = min(windowWidth - 20, 800);
-  let h = min(int(windowHeight * 0.8), w * 0.67)
+  let h = min(int(windowHeight - 90), w * 0.67)
   createCanvas(w, h);
 
   // path: left half of the screen with the actual path
@@ -52,7 +52,7 @@ function draw() {
   let bodyPosition = slope * 2.0;
   translate(fullPathX[30], fullPathY[30] + (width / 50.0));
   rotate(-slope * PI / 4.0);
-  drawBicycle(width / 4, pedalAngle, bodyPosition);
+  drawBicycle(min(width / 4, height / 3), pedalAngle, bodyPosition);
   
   // update path if 'updateMillis' have elapsed since last update 
   if ((m - millisOld) > updateMillis) {
@@ -290,7 +290,7 @@ function mouseClicked() {
 
 function windowResized() {
   let w = min(windowWidth - 20, 800);
-  let h = min(int(windowHeight * 0.8), w * 0.67)
+  let h = min(int(windowHeight - 90), w * 0.67)
   resizeCanvas(w, h);
   
   // reset path
