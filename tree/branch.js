@@ -11,7 +11,6 @@ function Branch(parent, pos, dir) {
   this.origDir = this.dir.copy();
   this.count = 0;
   this.dist = 0;
-  this.objects = [];
 
   this.reset = function() {
     this.dir = this.origDir.copy();

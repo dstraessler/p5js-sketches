@@ -9,7 +9,7 @@ function TargetPoint(pos) {
   this.reached = false;
 
   this.show = function() {
-    stroke(255);
+    stroke(160);
     point(this.pos.x, this.pos.y);
   };
 }

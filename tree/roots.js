@@ -3,16 +3,30 @@ function Roots() {
   let startDir = createVector(0, 1);
 
   let targets = [];
-  for (let i = 0; i < 250; i++) {
+  let n = int(width / 5);
+  for (let i = 0; i < n; i++) {
     let targetPos;
+    let d;
     do {
       targetPos = createVector(random(width),
         random(height * 0.62, height * 0.95));
-    } while (targetPos.copy().sub(startPos).mag() > width * 0.33)
+      d = targetPos.copy().sub(startPos).mag();
+    } while (d > width * 0.25)
 
     targets.push(new TargetPoint(targetPos));
   }
-  this.spanningtree = new SpanningTree(targets, startPos, startDir, 0.03, 0.2);
+  for (let i = 0; i < n / 4; i++) {
+    let targetPos;
+    let d;
+    do {
+      targetPos = createVector(random(width),
+        random(height * 0.62, height * 0.95));
+      d = targetPos.copy().sub(startPos).mag();
+    } while ((d < width * 0.25) || (d > width * 0.38))
+
+    targets.push(new TargetPoint(targetPos));
+  }
+  this.spanningtree = new SpanningTree(targets, startPos, startDir, 0.02, 0.2);
 
   this.grow = function() {
     this.spanningtree.grow()

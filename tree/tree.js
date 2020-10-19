@@ -3,13 +3,14 @@ function Tree() {
   let startDir = createVector(0, -1);
 
   let targets = [];
-  for (let i = 0; i < 250; i++) {
+  let n = int(width / 3);
+  for (let i = 0; i < n; i++) {
     let targetPos;
-    let dist;
+    let d;
     do {
       targetPos = createVector(random(width), random(height * 0.05, height * 0.4));
-      dist = targetPos.copy().sub(startPos).mag();
-    } while ((dist > width * 0.5) || (dist < width * 0.25))
+      d = targetPos.copy().sub(startPos).mag();
+    } while ((d > width * 0.5) || (d < width * 0.25))
 
     targets.push(new TargetPoint(targetPos));
   }
@@ -20,10 +21,15 @@ function Tree() {
   }
 
   this.show = function() {
+    for (let i = 0; i < this.spanningtree.targets.length; i++) {
+      this.spanningtree.targets[i].show();
+    }
+
     for (let i = 0; i < this.spanningtree.branches.length; i++) {
       if (this.spanningtree.branches[i].parent != null) {
         // draw branch
         stroke(255);
+        noFill();
         line(this.spanningtree.branches[i].pos.x,
           this.spanningtree.branches[i].pos.y,
           this.spanningtree.branches[i].parent.pos.x,
