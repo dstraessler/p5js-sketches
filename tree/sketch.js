@@ -19,7 +19,9 @@ function setup() {
 function draw() {
   background(40);
 
+  // draw ground
   stroke(255);
+  strokeWeight(1);
   let xTicks = width / (groundPath.length - 1.0);
   fill(51);
   stroke(150);
@@ -29,12 +31,14 @@ function draw() {
   }
   vertex(width, height);
   vertex(0, height);
-  vertex(0, groundPath[0])
+  vertex(0, groundPath[0]);
   endShape(CLOSE);
 
-  roots.show();
-  tree.show();
+  // draw current tree and roots
+  let sizeOfTrunk = tree.show();
+  roots.show(sizeOfTrunk);
 
+  // update tree and roots
   roots.grow();
   tree.grow();
 }

@@ -32,14 +32,18 @@ function Roots() {
     this.spanningtree.grow()
   }
 
-  this.show = function() {
+  this.show = function(targetSizeOfBeginning) {
     for (let i = 0; i < this.spanningtree.targets.length; i++) {
       this.spanningtree.targets[i].show();
     }
 
+    let strokeWeightScale = targetSizeOfBeginning /
+      this.spanningtree.branches[0].size;
+
     for (let i = 0; i < this.spanningtree.branches.length; i++) {
       if (this.spanningtree.branches[i].parent != null) {
         stroke(255);
+        strokeWeight(this.spanningtree.branches[i].size * strokeWeightScale);
         line(this.spanningtree.branches[i].pos.x,
           this.spanningtree.branches[i].pos.y,
           this.spanningtree.branches[i].parent.pos.x,

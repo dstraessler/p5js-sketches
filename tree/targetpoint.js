@@ -9,7 +9,9 @@ function TargetPoint(pos) {
   this.reached = false;
 
   this.show = function() {
-    stroke(160);
-    point(this.pos.x, this.pos.y);
+    stroke(100);
+    fill(100);
+    let size = max(1, width / 250);
+    ellipse(this.pos.x, this.pos.y, size, size);
   };
 }

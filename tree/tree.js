@@ -25,17 +25,21 @@ function Tree() {
       this.spanningtree.targets[i].show();
     }
 
+    let strokeWeightScale = 0.01;
+
     for (let i = 0; i < this.spanningtree.branches.length; i++) {
       if (this.spanningtree.branches[i].parent != null) {
         // draw branch
         stroke(255);
+        strokeWeight(this.spanningtree.branches[i].size * strokeWeightScale);
         noFill();
         line(this.spanningtree.branches[i].pos.x,
           this.spanningtree.branches[i].pos.y,
           this.spanningtree.branches[i].parent.pos.x,
           this.spanningtree.branches[i].parent.pos.y);
         // draw leaves
-        if (this.spanningtree.branches[i].dist == 0) {
+        strokeWeight(1);
+        if (this.spanningtree.branches[i].size < 1.0) {
           for (let k = 0; k < 10; k++) {
             let leafPos = this.spanningtree.branches[i].pos.copy();
             let a = width / 50;
@@ -46,5 +50,6 @@ function Tree() {
         }
       }
     }
+    return this.spanningtree.branches[0].size * strokeWeightScale;
   };
 }
