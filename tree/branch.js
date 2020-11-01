@@ -24,7 +24,7 @@ function Branch(parent, pos, dir) {
    * attached to the position of the current branch (parent)
    */
   this.next = function() {
-    let growSpeed = min(1, width / 500);
+    let growSpeed = max(1, width / 100);
     let vectorToNextPos = p5.Vector.mult(this.dir, growSpeed);
     let nextPos = p5.Vector.add(this.pos, vectorToNextPos);
     let nextBranch = new Branch(this, nextPos, this.dir.copy());

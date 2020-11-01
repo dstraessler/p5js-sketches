@@ -3,7 +3,7 @@ function Tree() {
   let startDir = createVector(0, -1);
 
   let targets = [];
-  let n = int(width / 3);
+  let n = int(width);
   for (let i = 0; i < n; i++) {
     let targetPos;
     let d;
@@ -25,7 +25,7 @@ function Tree() {
       this.spanningtree.targets[i].show();
     }
 
-    let strokeWeightScale = 0.01;
+    let strokeWeightScale = 0.05;
 
     for (let i = 0; i < this.spanningtree.branches.length; i++) {
       if (this.spanningtree.branches[i].parent != null) {

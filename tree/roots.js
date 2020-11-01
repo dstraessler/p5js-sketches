@@ -3,7 +3,7 @@ function Roots() {
   let startDir = createVector(0, 1);
 
   let targets = [];
-  let n = int(width / 5);
+  let n = int(width / 2);
   for (let i = 0; i < n; i++) {
     let targetPos;
     let d;
@@ -11,18 +11,7 @@ function Roots() {
       targetPos = createVector(random(width),
         random(height * 0.62, height * 0.95));
       d = targetPos.copy().sub(startPos).mag();
-    } while (d > width * 0.25)
-
-    targets.push(new TargetPoint(targetPos));
-  }
-  for (let i = 0; i < n / 4; i++) {
-    let targetPos;
-    let d;
-    do {
-      targetPos = createVector(random(width),
-        random(height * 0.62, height * 0.95));
-      d = targetPos.copy().sub(startPos).mag();
-    } while ((d < width * 0.25) || (d > width * 0.38))
+    } while (d > width * 0.38)
 
     targets.push(new TargetPoint(targetPos));
   }

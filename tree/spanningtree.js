@@ -83,21 +83,29 @@ function SpanningTree(targets, rootPos, rootDir, minDist, maxDist) {
       if (branch.count > 0) {
         // direction -> average of the normalized vectors toward all the sources
         branch.dir.div(branch.count + 1);
-        // catch lockups if two targets pull with equal force
-        if (branch.dir.mag() > 0.1) {
-          let newBranch = branch.next();
-          this.branches.push(newBranch);
-          branch.reset();
-          // update the distance of all parents from the new branch
-          let totalDistFromTip = 0;
-          while (newBranch.parent != null) {
-            newBranch = newBranch.parent;
-            totalDistFromTip++;
-            if (newBranch != null) {
-              newBranch.size = totalDistFromTip;
-            }
+        // catch lockups if two targets pull with equal force -> force splitting
+        if (branch.dir.mag() < 0.33) {
+          branch.dir.normalize();
+          this.branches.push(branch.next());
+          branch.dir.rotate(PI * 0.25);
+          this.branches.push(branch.next());
+          branch.dir.rotate(-PI * 0.5);
+          this.branches.push(branch.next());
+        } else {
+          this.branches.push(branch.next());
+        }
+        branch.reset();
+        // update the distance of all parents from the new branch
+        let totalDistFromTip = 0;
+        let newBranch = this.branches[this.branches.length - 1];
+        while (newBranch.parent != null) {
+          newBranch = newBranch.parent;
+          totalDistFromTip++;
+          if (newBranch != null) {
+            newBranch.size = totalDistFromTip;
           }
         }
+
       }
     }
   };
